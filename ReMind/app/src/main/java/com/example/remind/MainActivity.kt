@@ -1,5 +1,7 @@
 package com.example.remind
 
+import ReminderViewModelFactory
+import ReminderViewmodel
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -30,12 +32,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
-import com.example.remind.repository.ReminderList
+import com.example.remind.repository.ReminderRepository
 import com.example.remind.ui.theme.ReMindTheme
 import com.example.ui.SetReminderScreen
 
@@ -60,25 +63,35 @@ class MainActivity : ComponentActivity() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RemindApp(modifier: Modifier = Modifier) {
+    val reminderRepository = ReminderRepository()
+
+    val viewModelFactory = ReminderViewModelFactory(reminderRepository)
+    val reminderViewModel: ReminderViewmodel = viewModel(factory = viewModelFactory)
     val navController = rememberNavController()
+
     NavHost(navController = navController,
         graph = navController.createGraph(startDestination = "DisplayReminders"){
             composable(route = "DisplayReminders"){
-                DisplayRemindersScreen(navController = navController)
+                DisplayRemindersScreen(navController = navController,
+                    reminderViewModel = reminderViewModel
+                )
             }
             composable(route = "SetReminder"){
-                SetReminderScreen(navController = navController)
+                SetReminderScreen(navController = navController, reminderViewModel = reminderViewModel)
             }
         }
     )
+
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DisplayRemindersScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun DisplayRemindersScreen(modifier: Modifier = Modifier, navController: NavController, reminderViewModel: ReminderViewmodel) {
 
-    val reminders by ReminderList.reminders.observeAsState(emptyList())
+    val reminders by reminderViewModel.reminders.observeAsState(emptyList())
 
     Scaffold(
         topBar = {
@@ -98,7 +111,7 @@ fun DisplayRemindersScreen(modifier: Modifier = Modifier, navController: NavCont
             Column(modifier = Modifier.padding(paddingValues)) {
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(reminders) { reminder ->
-                        ReminderCard(reminder = reminder, modifier = Modifier.fillMaxWidth())
+                        ReminderCard(reminder = reminder, modifier = Modifier.fillMaxWidth(), reminderViewModel = reminderViewModel)
                     }
                 }
             }

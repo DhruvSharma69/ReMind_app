@@ -1,5 +1,6 @@
 package com.example.ui
 
+import ReminderViewmodel
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Build
@@ -29,7 +30,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.remind.repository.Reminder
-import com.example.remind.repository.ReminderList
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -37,7 +37,7 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SetReminderScreen(
-    modifier: Modifier = Modifier, navController: NavController
+    modifier: Modifier = Modifier, navController: NavController, reminderViewModel:ReminderViewmodel
 ) {
     var title by remember { mutableStateOf(TextFieldValue()) }
     var description by remember { mutableStateOf(TextFieldValue()) }
@@ -117,7 +117,7 @@ fun SetReminderScreen(
                     reminderDate = selectedDate,
                     reminderTime = selectedTime
                 )
-                ReminderList.addReminder(reminder = reminder)
+                reminderViewModel.addReminder(reminder = reminder)
                 navController.navigate(route = "DisplayReminders")
             },
             modifier = Modifier.align(Alignment.End)

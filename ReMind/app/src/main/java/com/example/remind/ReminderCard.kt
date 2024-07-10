@@ -1,5 +1,6 @@
 package com.example.remind
 
+import ReminderViewmodel
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
@@ -21,14 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.remind.repository.Reminder
-import com.example.remind.repository.ReminderList
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ReminderCard(
     modifier: Modifier = Modifier,
-    reminder: Reminder
+    reminder: Reminder,
+    reminderViewModel:ReminderViewmodel
 ) {
     Card(
         modifier = modifier
@@ -51,7 +52,7 @@ fun ReminderCard(
             )
             Spacer(modifier = Modifier.width(8.dp))
             IconButton(onClick = {
-                ReminderList.deleteReminder(reminder)
+                reminderViewModel.deleteReminder(reminder)
             }) {
                 Icon(
                     imageVector = Icons.Default.Delete,

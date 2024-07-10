@@ -1,8 +1,6 @@
 package com.example.remind.repository
 
-import java.sql.Time
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 data class Reminder(
@@ -12,3 +10,5 @@ data class Reminder(
     val reminderDate:LocalDate,
     val reminderTime: LocalTime
 )
+
+
