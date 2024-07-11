@@ -2,6 +2,9 @@ package com.example.remind
 
 import ReminderViewModelFactory
 import ReminderViewmodel
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -30,7 +33,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -53,7 +55,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    RemindApp()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val channel = NotificationChannel(
+                            "reminderChannel",
+                            "Reminder Notifications",
+                            NotificationManager.IMPORTANCE_HIGH
+                        )
+                        val manager = getSystemService(NotificationManager::class.java)
+                        manager.createNotificationChannel(channel)
+                    }
+                    RemindApp(applicationContext)
                 }
             }
         }
@@ -62,10 +73,11 @@ class MainActivity : ComponentActivity() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RemindApp(modifier: Modifier = Modifier) {
+fun RemindApp(context: Context,modifier: Modifier = Modifier) {
+
     val reminderRepository = ReminderRepository()
 
-    val viewModelFactory = ReminderViewModelFactory(reminderRepository)
+    val viewModelFactory = ReminderViewModelFactory(reminderRepository, context)
     val reminderViewModel: ReminderViewmodel = viewModel(factory = viewModelFactory)
     val navController = rememberNavController()
 
@@ -119,11 +131,3 @@ fun DisplayRemindersScreen(modifier: Modifier = Modifier, navController: NavCont
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ReMindTheme {
-        RemindApp(Modifier)
-    }
-}

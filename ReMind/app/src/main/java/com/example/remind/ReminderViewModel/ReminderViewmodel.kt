@@ -1,17 +1,20 @@
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.remind.notification.scheduleReminder
 import com.example.remind.repository.Reminder
 import com.example.remind.repository.ReminderRepository
 import kotlinx.coroutines.launch
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-class ReminderViewmodel(private val reminderRepository:ReminderRepository) : ViewModel() {
+class ReminderViewmodel(private val reminderRepository:ReminderRepository,
+    private val context: Context) : ViewModel() {
    //viewmodel will handle state changes and will talk to ui and repository(data)
     // this variable will mark internal changes to data through its class methods
     private val _reminders = MutableLiveData<List<Reminder>>()
@@ -28,6 +31,7 @@ class ReminderViewmodel(private val reminderRepository:ReminderRepository) : Vie
          viewModelScope.launch {
              val remindersFromDatabase = reminderRepository.fetchReminders().toMutableList()
              _reminders.value = remindersFromDatabase
+             scheduleAllReminder(context, remindersFromDatabase)
          }
      }
 
@@ -44,6 +48,12 @@ class ReminderViewmodel(private val reminderRepository:ReminderRepository) : Vie
         viewModelScope.launch {
             reminderRepository.deleteReminder(reminder)
             loadReminders()
+        }
+    }
+
+    fun scheduleAllReminder(context: Context, reminders:List<Reminder>){
+        reminders.forEach{
+            scheduleReminder(context,it)
         }
     }
 

@@ -4,6 +4,7 @@ import ReminderViewmodel
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,6 +46,9 @@ fun SetReminderScreen(
     var selectedTime by remember { mutableStateOf(LocalTime.now()) }
     val context = LocalContext.current
 
+    val currentDate = LocalDate.now()
+    val currentTime = LocalTime.now()
+
     // Date Picker Dialog
     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val datePickerDialog = DatePickerDialog(
@@ -56,14 +60,21 @@ fun SetReminderScreen(
         selectedDate.monthValue - 1,
         selectedDate.dayOfMonth
     )
+    datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000
 
     // Time Picker Dialog
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     val timePickerDialog = TimePickerDialog(
         context,
         { _, hourOfDay, minute ->
-            selectedTime = LocalTime.of(hourOfDay, minute)
+            val pickedTime = LocalTime.of(hourOfDay, minute)
+            if (selectedDate == currentDate && pickedTime.isBefore(currentTime)) {
+                Toast.makeText(context, "Cannot pick a past time", Toast.LENGTH_SHORT).show()
+            } else {
+                selectedTime = pickedTime
+            }
         },
+
         selectedTime.hour,
         selectedTime.minute,
         true

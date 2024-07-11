@@ -2,6 +2,8 @@ package com.example.remind.repository
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import java.time.LocalDate
+import java.time.LocalTime
 
 class ReminderRepository {
 
@@ -9,7 +11,7 @@ class ReminderRepository {
 
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun fetchReminders(): List<Reminder> {
-        TODO()
+        return listOf(Reminder("samepleDes", "sampleTitle", true, LocalDate.of(2024, 7, 11), LocalTime.of(14,29)))
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
