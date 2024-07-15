@@ -30,6 +30,7 @@ class ReminderViewmodel(private val reminderRepository:ReminderRepository,
      private fun loadReminders(){
          viewModelScope.launch {
              val remindersFromDatabase = reminderRepository.fetchReminders().toMutableList()
+
              _reminders.value = remindersFromDatabase
              scheduleAllReminder(context, remindersFromDatabase)
          }

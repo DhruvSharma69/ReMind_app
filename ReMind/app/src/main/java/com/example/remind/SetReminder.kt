@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.remind.NavRoutes
 import com.example.remind.repository.Reminder
 import java.time.LocalDate
 import java.time.LocalTime
@@ -129,7 +130,7 @@ fun SetReminderScreen(
                     reminderTime = selectedTime
                 )
                 reminderViewModel.addReminder(reminder = reminder)
-                navController.navigate(route = "DisplayReminders")
+                navController.navigate(route = NavRoutes.DisplayScreen.routes)
             },
             modifier = Modifier.align(Alignment.End)
         ) {

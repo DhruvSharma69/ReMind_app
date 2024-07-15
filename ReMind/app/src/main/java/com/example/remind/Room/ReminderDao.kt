@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.remind.repository.Reminder
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ReminderDao {
@@ -15,5 +14,5 @@ interface ReminderDao {
     suspend fun deleteReminder(reminder:Reminder)
 
     @Query("SELECT * FROM REMINDER ORDER BY REMINDERDATE ASC")
-    fun getReminders(): Flow<List<Reminder>>
+    suspend fun getReminders(): List<Reminder>
 }

@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -40,6 +41,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
+import androidx.room.Room
+import com.example.remind.Room.ReminderDatabase
 import com.example.remind.repository.ReminderRepository
 import com.example.remind.ui.theme.ReMindTheme
 import com.example.ui.SetReminderScreen
@@ -64,7 +67,11 @@ class MainActivity : ComponentActivity() {
                         val manager = getSystemService(NotificationManager::class.java)
                         manager.createNotificationChannel(channel)
                     }
-                    RemindApp(applicationContext)
+
+                    val database = Room.databaseBuilder(context = applicationContext, klass = ReminderDatabase::class.java, name = ReminderDatabase.name).build()
+                    val reminderRepository = ReminderRepository(database.getDao())
+
+                    RemindApp(applicationContext, reminderRepository = reminderRepository)
                 }
             }
         }
@@ -73,22 +80,21 @@ class MainActivity : ComponentActivity() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RemindApp(context: Context,modifier: Modifier = Modifier) {
+fun RemindApp(context: Context,modifier: Modifier = Modifier, reminderRepository:ReminderRepository) {
 
-    val reminderRepository = ReminderRepository()
 
     val viewModelFactory = ReminderViewModelFactory(reminderRepository, context)
     val reminderViewModel: ReminderViewmodel = viewModel(factory = viewModelFactory)
     val navController = rememberNavController()
 
     NavHost(navController = navController,
-        graph = navController.createGraph(startDestination = "DisplayReminders"){
-            composable(route = "DisplayReminders"){
+        graph = navController.createGraph(startDestination = NavRoutes.DisplayScreen.routes){
+            composable(route = NavRoutes.DisplayScreen.routes){
                 DisplayRemindersScreen(navController = navController,
                     reminderViewModel = reminderViewModel
                 )
             }
-            composable(route = "SetReminder"){
+            composable(route = NavRoutes.SetReminder.routes){
                 SetReminderScreen(navController = navController, reminderViewModel = reminderViewModel)
             }
         }
@@ -115,7 +121,7 @@ fun DisplayRemindersScreen(modifier: Modifier = Modifier, navController: NavCont
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(route = "SetReminder") }) {
+            FloatingActionButton(onClick = { navController.navigate(route = NavRoutes.SetReminder.routes) }) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add reminder")
             }
         },
@@ -129,5 +135,9 @@ fun DisplayRemindersScreen(modifier: Modifier = Modifier, navController: NavCont
             }
         }
     )
+}
+enum class NavRoutes(val routes: String){
+    DisplayScreen("displayScreen"),
+    SetReminder("setReminder")
 }
 
