@@ -49,7 +49,7 @@ import com.example.ui.SetReminderScreen
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun  onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             ReMindTheme {
@@ -63,9 +63,12 @@ class MainActivity : ComponentActivity() {
                             "reminderChannel",
                             "Reminder Notifications",
                             NotificationManager.IMPORTANCE_HIGH
+
                         )
+
                         val manager = getSystemService(NotificationManager::class.java)
                         manager.createNotificationChannel(channel)
+                        Log.d("IF", "onCreate: entered if ${Build.VERSION.SDK_INT}")
                     }
 
                     val database = Room.databaseBuilder(context = applicationContext, klass = ReminderDatabase::class.java, name = ReminderDatabase.name).build()

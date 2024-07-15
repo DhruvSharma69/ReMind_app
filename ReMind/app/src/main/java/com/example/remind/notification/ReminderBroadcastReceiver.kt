@@ -24,6 +24,9 @@ class ReminderBroadcastReceiver: BroadcastReceiver() {
             .setAutoCancel(true)
 
         notificationManager.notify(0,notificationBuilder.build())
-
+        // Playing alarm sound
+        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+        val ringtone = RingtoneManager.getRingtone(context, alarmSound)
+        ringtone.play()
     }
 }
